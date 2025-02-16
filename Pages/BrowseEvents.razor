@@ -4,6 +4,8 @@
 @using EventEase.Services
 @inject EventService EventService
 @inject RegistrationService RegistrationService
+@inject UserService UserService
+@inject AttendanceService AttendanceService
 
 <PageTitle>Browse Events</PageTitle>
 
@@ -27,6 +29,10 @@ else
             else
             {
                 <a href="event-details/@eventItem.Id">View Details</a>
+            }
+            @if (IsUserAttending(eventItem.Id))
+            {
+                <p>You are attending this event.</p>
             }
         </div>
     }
@@ -82,7 +88,18 @@ else
 
     private bool IsUserRegistered(int eventId)
     {
+        var currentUser = UserService.GetCurrentUser();
+        if (currentUser == null) return false;
+
         var registrations = RegistrationService.GetRegistrationsByEventId(eventId);
-        return registrations.Any(r => r.Email == "user@example.com"); // Replace with actual user email logic
+        return registrations.Any(r => r.Email == currentUser.Email);
+    }
+
+    private bool IsUserAttending(int eventId)
+    {
+        var currentUser = UserService.GetCurrentUser();
+        if (currentUser == null) return false;
+
+        return AttendanceService.IsAttending(eventId, currentUser.Email);
     }
 }

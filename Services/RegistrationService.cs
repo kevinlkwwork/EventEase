@@ -7,9 +7,10 @@ namespace EventEase.Services
     {
         private List<Registration> registrations = new List<Registration>();
 
-        public void AddRegistration(Registration registration)
+        public async Task AddRegistration(Registration registration)
         {
             registrations.Add(registration);
+            await Task.CompletedTask;
         }
 
         public List<Registration> GetRegistrations()

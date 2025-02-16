@@ -1,6 +1,9 @@
 @page "/event-registration/{id:int}"
 
 @using EventEase.Models
+@using EventEase.Services
+@inject RegistrationService RegistrationService
+@inject UserService UserService
 
 <PageTitle>Event Registration</PageTitle>
 
@@ -30,9 +33,16 @@
         eventDetails = new Event { Id = Id, Name = $"Event {Id}", Date = DateTime.Now.AddDays(Id), Location = $"Location {Id}" };
     }
 
-    private void Register()
+    private async Task Register()
     {
         // Handle registration logic
+        var registration = new Registration
+        {
+            EventId = eventDetails.Id,
+            Name = name,
+            Email = email
+        };
+        await RegistrationService.AddRegistration(registration);
         Console.WriteLine($"Registered {name} ({email}) for event {eventDetails.Name}");
     }
 }

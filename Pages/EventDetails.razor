@@ -3,6 +3,8 @@
 @using EventEase.Models
 @using EventEase.Services
 @inject EventService EventService
+@inject AttendanceService AttendanceService
+@inject UserService UserService
 
 <PageTitle>Event Details</PageTitle>
 
@@ -11,14 +13,39 @@
 <p>Location: @eventDetails.Location</p>
 <a href="event-registration/@eventDetails.Id">Register</a>
 
+@if (UserService.IsUserLoggedIn())
+{
+    <button @onclick="MarkAttendance">Mark Attendance</button>
+    @if (isAttending)
+    {
+        <p>You are attending this event.</p>
+    }
+}
+
 @code {
     [Parameter]
     public int Id { get; set; }
 
     private Event eventDetails;
+    private bool isAttending;
 
     protected override void OnParametersSet()
     {
         eventDetails = EventService.GetEventById(Id);
+        var currentUser = UserService.GetCurrentUser();
+        if (currentUser != null)
+        {
+            isAttending = AttendanceService.IsAttending(Id, currentUser.Email);
+        }
+    }
+
+    private void MarkAttendance()
+    {
+        var currentUser = UserService.GetCurrentUser();
+        if (currentUser != null)
+        {
+            AttendanceService.MarkAttendance(Id, currentUser.Email);
+            isAttending = true;
+        }
     }
 }

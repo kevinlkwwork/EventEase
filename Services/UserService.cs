@@ -1,15 +1,11 @@
 using System.Threading.Tasks;
+using EventEase.Models;
 
 namespace EventEase.Services
 {
     public class UserService
     {
         private User _currentUser;
-
-        public User GetCurrentUser()
-        {
-            return _currentUser;
-        }
 
         public Task Login(User user)
         {
@@ -22,11 +18,15 @@ namespace EventEase.Services
             _currentUser = null;
             return Task.CompletedTask;
         }
-    }
 
-    public class User
-    {
-        public string Name { get; set; }
-        public string Email { get; set; }
+        public User GetCurrentUser()
+        {
+            return _currentUser;
+        }
+
+        public bool IsUserLoggedIn()
+        {
+            return _currentUser != null;
+        }
     }
 }

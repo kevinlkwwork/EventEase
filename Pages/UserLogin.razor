@@ -1,5 +1,5 @@
 @page "/user-login"
-
+@using EventEase.Models
 @using EventEase.Services
 @inject UserService UserService
 @inject NavigationManager Navigation
@@ -34,7 +34,7 @@
         // Simulate login logic
         var user = new User
         {
-            Name = "Test User",
+            Name = "User",
             Email = loginModel.Email
         };
         await UserService.Login(user);

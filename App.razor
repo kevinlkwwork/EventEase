@@ -1,4 +1,7 @@
-﻿<CascadingAuthenticationState>
+﻿@using EventEase.Services
+@inject UserService UserService
+
+<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
