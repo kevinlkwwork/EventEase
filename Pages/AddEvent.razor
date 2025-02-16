@@ -1,0 +1,57 @@
+@using EventEase.Models
+@using EventEase.Services
+@inject EventService EventService
+@using System.ComponentModel.DataAnnotations
+@code {
+    [Parameter]
+    public EventCallback OnEventAdded { get; set; }
+
+    private NewEventModel newEventModel = new NewEventModel { Date = DateTime.Now };
+
+    private async Task SubmitEvent()
+    {
+        var newEvent = new Event
+        {
+            Name = newEventModel.Name,
+            Date = newEventModel.Date,
+            Location = newEventModel.Location
+        };
+        EventService.AddEvent(newEvent);
+        newEventModel = new NewEventModel { Date = DateTime.Now }; // Reset the form with default date
+        await OnEventAdded.InvokeAsync();
+    }
+
+    public class NewEventModel
+    {
+        [Required(ErrorMessage = "Name is required")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Date is required")]
+        public DateTime Date { get; set; }
+
+        [Required(ErrorMessage = "Location is required")]
+        public string Location { get; set; }
+    }
+}
+
+<EditForm Model="newEventModel" OnValidSubmit="SubmitEvent">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Name:</label>
+        <InputText id="name" @bind-Value="newEventModel.Name" />
+        <ValidationMessage For="@(() => newEventModel.Name)" />
+    </div>
+    <div>
+        <label>Date:</label>
+        <InputDate id="date" @bind-Value="newEventModel.Date" />
+        <ValidationMessage For="@(() => newEventModel.Date)" />
+    </div>
+    <div>
+        <label>Location:</label>
+        <InputText id="location" @bind-Value="newEventModel.Location" />
+        <ValidationMessage For="@(() => newEventModel.Location)" />
+    </div>
+    <button type="submit">Add Event</button>
+</EditForm>

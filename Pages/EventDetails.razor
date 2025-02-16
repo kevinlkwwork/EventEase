@@ -1,0 +1,24 @@
+@page "/event-details/{id:int}"
+
+@using EventEase.Models
+@using EventEase.Services
+@inject EventService EventService
+
+<PageTitle>Event Details</PageTitle>
+
+<h1>@eventDetails.Name</h1>
+<p>Date: @eventDetails.Date.ToShortDateString()</p>
+<p>Location: @eventDetails.Location</p>
+<a href="event-registration/@eventDetails.Id">Register</a>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Event eventDetails;
+
+    protected override void OnParametersSet()
+    {
+        eventDetails = EventService.GetEventById(Id);
+    }
+}

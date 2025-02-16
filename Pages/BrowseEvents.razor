@@ -1,0 +1,88 @@
+@page "/browse-events"
+
+@using EventEase.Models
+@using EventEase.Services
+@inject EventService EventService
+@inject RegistrationService RegistrationService
+
+<PageTitle>Browse Events</PageTitle>
+
+<h1>Browse Events</h1>
+
+@if (events == null)
+{
+    <p>Loading events...</p>
+}
+else
+{
+    @foreach (var eventItem in paginatedEvents)
+    {
+        <div>
+            <h2>@eventItem.Name</h2>
+            <p>@eventItem.Date.ToShortDateString() - @eventItem.Location</p>
+            @if (IsUserRegistered(eventItem.Id))
+            {
+                <p>You are registered for this event.</p>
+            }
+            else
+            {
+                <a href="event-details/@eventItem.Id">View Details</a>
+            }
+        </div>
+    }
+
+    <button @onclick="LoadMoreEvents" disabled="@(!hasMoreEvents)">Load More</button>
+}
+
+<button @onclick="ToggleAddEventForm">Add Event</button>
+
+@if (showAddEventForm)
+{
+    <AddEvent OnEventAdded="RefreshEvents" />
+}
+
+@code {
+    private List<Event> events;
+    private List<Event> paginatedEvents = new List<Event>();
+    private int pageSize = 5;
+    private int currentPage = 0;
+    private bool hasMoreEvents = true;
+    private bool showAddEventForm = false;
+
+    protected override void OnInitialized()
+    {
+        events = EventService.GetEvents();
+        LoadMoreEvents();
+    }
+
+    private void LoadMoreEvents()
+    {
+        var nextPageEvents = events.Skip(currentPage * pageSize).Take(pageSize).ToList();
+        if (nextPageEvents.Count < pageSize)
+        {
+            hasMoreEvents = false;
+        }
+        paginatedEvents.AddRange(nextPageEvents);
+        currentPage++;
+    }
+
+    private void ToggleAddEventForm()
+    {
+        showAddEventForm = !showAddEventForm;
+    }
+
+    private void RefreshEvents()
+    {
+        events = EventService.GetEvents();
+        paginatedEvents.Clear();
+        currentPage = 0;
+        hasMoreEvents = true;
+        LoadMoreEvents();
+    }
+
+    private bool IsUserRegistered(int eventId)
+    {
+        var registrations = RegistrationService.GetRegistrationsByEventId(eventId);
+        return registrations.Any(r => r.Email == "user@example.com"); // Replace with actual user email logic
+    }
+}

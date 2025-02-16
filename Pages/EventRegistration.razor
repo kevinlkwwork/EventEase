@@ -1,0 +1,38 @@
+@page "/event-registration/{id:int}"
+
+@using EventEase.Models
+
+<PageTitle>Event Registration</PageTitle>
+
+<h1>Register for @eventDetails.Name</h1>
+
+<p>Date: @eventDetails.Date.ToShortDateString()</p>
+<p>Location: @eventDetails.Location</p>
+
+<form>
+    <label>Name: <input type="text" @bind="name" /></label><br />
+    <label>Email: <input type="email" @bind="email" /></label><br />
+    <button type="submit" @onclick="Register">Register</button>
+</form>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Event eventDetails;
+    private string name;
+    private string email;
+
+    protected override void OnParametersSet()
+    {
+        // Fetch event details based on Id
+        // For now, using a static event for demonstration
+        eventDetails = new Event { Id = Id, Name = $"Event {Id}", Date = DateTime.Now.AddDays(Id), Location = $"Location {Id}" };
+    }
+
+    private void Register()
+    {
+        // Handle registration logic
+        Console.WriteLine($"Registered {name} ({email}) for event {eventDetails.Name}");
+    }
+}
